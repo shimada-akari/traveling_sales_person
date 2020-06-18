@@ -80,7 +80,7 @@ def chenge_tour_three(tour, i, j):
 
 
 
-def process_3(tour, count, city1_index, city2_index, city3_index, city4_index, city5_index):
+def get_min_tour_3points(tour, count, city1_index, city2_index, city3_index, city4_index, city5_index):
 
     if check_min_way_three(tour, city1_index, city2_index, city3_index, city4_index, city5_index):
         tour = chenge_tour_three(tour, city2_index, city4_index) #つなぎ変える
@@ -90,22 +90,27 @@ def process_3(tour, count, city1_index, city2_index, city3_index, city4_index, c
 
 
 
-def optimize_3(N, tour):
+def get_tmp_min_tour_3points(tour):
+    count = 0
 
+    for i in range(N):
+        city1_index = i - 1
+        city2_index = i
+        city3_index = (i + 1) % N
+
+        for j in range((i + 2) % N, (i + 2) % N + N - 4): #city1 -> city2 -> city3 に隣接していない辺についてそれぞれcity2とのつなぎ変えを考える
+            city4_index = j % N
+            city5_index = (j + 1) % N
+
+            tour, count = get_min_tour_3points(tour, count, city1_index, city2_index, city3_index, city4_index, city5_index) #「つなぎ変えorそのまま」のどちらか距離が最小のものが返ってくる 
+
+    return tour, count
+
+
+
+def optimize_3(tour):
     while(True):
-        count = 0
-
-        for i in range(N):
-            city1_index = i - 1
-            city2_index = i
-            city3_index = (i + 1) % N
-
-            for j in range((i + 2) % N, (i + 2) % N + N - 4): #city1 -> city2 -> city3 に隣接していない辺についてそれぞれcity2とのつなぎ変えを考える
-                city4_index = j % N
-                city5_index = (j + 1) % N
-
-                tour, count = process_3(tour, count, city1_index, city2_index, city3_index, city4_index, city5_index) #「つなぎ変えorそのまま」のどちらか距離が最小のものが返ってくる
-                    
+        tour, count = get_tmp_min_tour_3points(tour) #交差を入れ替えた経路（交差が完全には覗かれていない場合あり）  
         if count == 0: #つなぎ変えが発生しなかったら終了
             break
 
@@ -135,7 +140,7 @@ def chenge_tour_two(tour, city2_index, city4_index):
 
 
 
-def process_2(tour, count, city1_index, city2_index, city3_index, city4_index):
+def get_min_tour_2points(tour, count, city1_index, city2_index, city3_index, city4_index):
     if check_min_way_two(tour, city1_index, city2_index, city3_index, city4_index):
         tour = chenge_tour_two(tour, city2_index, city3_index + 1)
         count += 1
@@ -143,20 +148,27 @@ def process_2(tour, count, city1_index, city2_index, city3_index, city4_index):
 
 
 
-def optimize_2(N, tour):
+def get_tmp_min_tour_2points(tour):
+    count = 0
+    for i in range(N - 2):
+        city1_index = i
+        city2_index = i + 1
+
+        for j in range(i + 2, N):
+            city3_index = j
+            city4_index = (j + 1) % N
+
+            tour, count = get_min_tour_2points(tour, count, city1_index, city2_index, city3_index, city4_index)   
+
+    return tour, count
+
+
+
+def optimize_2(tour):
     global dist
 
     while (True):
-        count = 0
-        for i in range(N - 2):
-            city1_index = i
-            city2_index = i + 1
-
-            for j in range(i + 2, N):
-                city3_index = j
-                city4_index = (j + 1) % N
-
-                tour, count = process_2(tour, count, city1_index, city2_index, city3_index, city4_index)
+        tour, count = get_tmp_min_tour_2points(tour) #交差を入れ替えた経路（交差が完全には覗かれていない場合あり）
 
         if count == 0: 
             break
@@ -180,10 +192,10 @@ def get_min_tour(dist):
     for start_point in range(N): #スタート地点を変える
         tour = make_tour_greedy(dist, start_point) #貪欲法での解法
         
-        tour = optimize_3(N, tour) #3点のつなぎ変え
+        tour = optimize_3(tour) #3点のつなぎ変え
         # print("three done")
 
-        tour = optimize_2(N, tour) #2点のつなぎ変え
+        tour = optimize_2(tour) #2点のつなぎ変え
         # print("two done")
 
         path_length = cal_path_length(dist, tour) #経路の合計距離を計算
@@ -196,7 +208,7 @@ def get_min_tour(dist):
     return min_tour
 
 
-    
+
 if __name__ == '__main__':
 
     assert len(sys.argv) > 1
