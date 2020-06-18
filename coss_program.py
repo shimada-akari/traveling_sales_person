@@ -11,7 +11,7 @@ def distance(city1, city2):
 
 
 
-def cal_path_length(dist, tour):
+def cal_path_length(dist, tour): #経路の合計距離
     path_length = sum(dist[tour[i]][tour[(i + 1) % N]] for i in range(N))
     return path_length
 
@@ -43,7 +43,7 @@ def make_tour_greedy(dist, start_point):
 
 
 
-def cal_dist(cities):
+def cal_dist(cities): #距離の隣接行列を作成
     global N
     N = len(cities)
 
@@ -53,7 +53,7 @@ def cal_dist(cities):
 
 
 
-def check_min_way_three(tour, city1_index, city2_index, city3_index, city4_index, city5_index):
+def check_min_way_three(tour, city1_index, city2_index, city3_index, city4_index, city5_index): 
     dis1_2 = dist[tour[city1_index]][tour[city2_index]]
     dis2_3 = dist[tour[city2_index]][tour[city3_index]]
     dis4_5 = dist[tour[city4_index]][tour[city5_index]]
@@ -80,9 +80,9 @@ def chenge_tour_three(tour, i, j):
 
 
 
-def three_opt(N, tour):
-    p = 0
-    while(p < 20):
+def opt_3(N, tour):
+
+    while(True):
         count = 0
 
         for i in range(N):
@@ -90,21 +90,17 @@ def three_opt(N, tour):
             city2_index = i
             city3_index = (i + 1) % N
 
-            for j in range((i + 2) % N, (i + 2) % N + N - 4):
+            for j in range((i + 2) % N, (i + 2) % N + N - 4): #city1 -> city2 -> city3 に隣接していない辺についてそれぞれcity2とのつなぎ変えを考える
                 city4_index = j % N
                 city5_index = (j + 1) % N
 
                 if check_min_way_three(tour, city1_index, city2_index, city3_index, city4_index, city5_index):
-                    tour = chenge_tour_three(tour, city2_index, city4_index)
+                    tour = chenge_tour_three(tour, city2_index, city4_index) #つなぎ変える
                     count += 1
                     
-        if count == 0:
+        if count == 0: #つなぎ変えが発生しなかったら終了
             break
-        p += 1
-  
-    if p == 20: #無限ループの可能性あり、強制終了
-        print("break")
-        exit()
+
     return tour
 
 
@@ -123,7 +119,7 @@ def check_min_way_two(tour, city1_index, city2_index, city3_index, city4_index):
 
 def chenge_tour_two(tour, city2_index, city4_index):
 
-    new_path = tour[city2_index:city4_index] 
+    new_path = tour[city2_index:city4_index] #vity4_indexがtourのインデックスを超えていた場合、tourの最後の要素までが切り取られる
     tour[city2_index:city4_index] = new_path[::-1]
 
     return tour
@@ -133,7 +129,6 @@ def chenge_tour_two(tour, city2_index, city4_index):
 def opt_2(N, tour):
     global dist
 
-    p = 0
     while (True):
         count = 0
         for i in range(N - 2):
@@ -150,16 +145,11 @@ def opt_2(N, tour):
 
         if count == 0: break
 
-        p += 1
-        if p >= 20:
-            print("break")
-            exit()
-
     return tour
 
 
 
-def save_file(path, tour):
+def save_file(path, tour): #結果保存
     with open(path, "w") as f:
      
         writer = csv.writer(f)
@@ -173,22 +163,22 @@ if __name__ == '__main__':
 
     assert len(sys.argv) > 1
     cities = read_input(sys.argv[1])
-    dist = cal_dist(cities) #データ読み込んでやるときはこっち
+    dist = cal_dist(cities) #データ読み込み
     
     print("load done")
     min_distance = 10**9
 
-    for start_point in range(N):
-        tour = make_tour_greedy(dist, start_point)
+    for start_point in range(N): #スタート地点を変える
+        tour = make_tour_greedy(dist, start_point) #貪欲法での解法
         
-        tour = three_opt(N, tour)
+        tour = opt_3(N, tour) #3点のつなぎ変え
         # print("three done")
 
-        tour = opt_2(N, tour)
+        tour = opt_2(N, tour) #2点のつなぎ変え
         # print("two done")
 
-        path_length = cal_path_length(dist, tour)
-        # print(tour, path_length)
+        path_length = cal_path_length(dist, tour) #経路の合計距離を計算
+       
         if min_distance > path_length:
             min_distance = path_length
             min_tour = tour
