@@ -79,6 +79,7 @@ def chenge_tour_three(tour, i, j):
     return tour
 
 
+
 def process_3(tour, count, city1_index, city2_index, city3_index, city4_index, city5_index):
 
     if check_min_way_three(tour, city1_index, city2_index, city3_index, city4_index, city5_index):
@@ -86,6 +87,8 @@ def process_3(tour, count, city1_index, city2_index, city3_index, city4_index, c
         count += 1
 
     return tour, count
+
+
 
 def optimize_3(N, tour):
 
@@ -120,6 +123,7 @@ def check_min_way_two(tour, city1_index, city2_index, city3_index, city4_index):
         return True #変えた方が短くなる
     else:
         return False
+
 
 
 def chenge_tour_two(tour, city2_index, city4_index):
