@@ -165,8 +165,6 @@ def get_tmp_min_tour_2points(tour):
 
 
 def optimize_2(tour):
-    global dist
-
     while (True):
         tour, count = get_tmp_min_tour_2points(tour) #交差を入れ替えた経路（交差が完全には覗かれていない場合あり）
 
