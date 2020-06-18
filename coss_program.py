@@ -34,8 +34,7 @@ def make_tour_greedy(dist, start_point):
     unvisited_cities.remove(current_city)
 
     while unvisited_cities:
-        next_city = min(unvisited_cities,
-                        key=lambda city: dist[current_city][city])
+        next_city = min(unvisited_cities, key=lambda city: dist[current_city][city])
         unvisited_cities.remove(next_city)
         tour.append(next_city)
         current_city = next_city
@@ -145,10 +144,9 @@ def opt_2(N, tour):
                 city3_index = j
                 city4_index = (j + 1) % N
 
-                if city1_index != 0 or city4_index != 0:
-                    if check_min_way_two(tour, city1_index, city2_index, city3_index, city4_index):
-                        tour = chenge_tour_two(tour, city2_index, city3_index + 1)
-                        count += 1
+                if check_min_way_two(tour, city1_index, city2_index, city3_index, city4_index):
+                    tour = chenge_tour_two(tour, city2_index, city3_index + 1)
+                    count += 1
 
         if count == 0: break
 
@@ -169,6 +167,8 @@ def save_file(path, tour):
         for city1_index in tour:
             writer.writerow([str(city1_index)])
 
+
+
 if __name__ == '__main__':
 
     assert len(sys.argv) > 1
@@ -180,7 +180,6 @@ if __name__ == '__main__':
 
     for start_point in range(N):
         tour = make_tour_greedy(dist, start_point)
-
         
         tour = three_opt(N, tour)
         # print("three done")
@@ -189,14 +188,15 @@ if __name__ == '__main__':
         # print("two done")
 
         path_length = cal_path_length(dist, tour)
+        # print(tour, path_length)
         if min_distance > path_length:
             min_distance = path_length
             min_tour = tour
             print(min_distance)
 
     # print(tour)
-    # print(sys.argv[1][6])
-    # path = "output_" + sys.argv[1][6] + ".csv"
-    # save_file(path, tour)
+    print(sys.argv[1][6])
+    path = "output_" + sys.argv[1][6] + ".csv"
+    save_file(path, min_tour)
 
    
