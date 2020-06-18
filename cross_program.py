@@ -175,15 +175,8 @@ def save_file(path, tour): #結果保存
 
 
 
-if __name__ == '__main__':
-
-    assert len(sys.argv) > 1
-    cities = read_input(sys.argv[1])
-    dist = cal_dist(cities) #データ読み込み
-    
-    print("load done")
+def get_min_tour(dist):
     min_distance = 10**9
-
     for start_point in range(N): #スタート地点を変える
         tour = make_tour_greedy(dist, start_point) #貪欲法での解法
         
@@ -200,9 +193,23 @@ if __name__ == '__main__':
             min_tour = tour
             print(min_distance)
 
+    return min_tour
+
+
+    
+if __name__ == '__main__':
+
+    assert len(sys.argv) > 1
+    cities = read_input(sys.argv[1])
+    dist = cal_dist(cities) #データ読み込み
+    
+    print("load done")
+
+    tour = get_min_tour(dist)
+
     # print(tour)
     print(sys.argv[1][6])
     path = "output_" + sys.argv[1][6] + ".csv"
-    save_file(path, min_tour)
+    save_file(path, tour)
 
    
