@@ -79,8 +79,15 @@ def chenge_tour_three(tour, i, j):
     return tour
 
 
+def process_3(tour, count, city1_index, city2_index, city3_index, city4_index, city5_index):
 
-def opt_3(N, tour):
+    if check_min_way_three(tour, city1_index, city2_index, city3_index, city4_index, city5_index):
+        tour = chenge_tour_three(tour, city2_index, city4_index) #つなぎ変える
+        count += 1
+
+    return tour, count
+
+def optimize_3(N, tour):
 
     while(True):
         count = 0
@@ -94,9 +101,7 @@ def opt_3(N, tour):
                 city4_index = j % N
                 city5_index = (j + 1) % N
 
-                if check_min_way_three(tour, city1_index, city2_index, city3_index, city4_index, city5_index):
-                    tour = chenge_tour_three(tour, city2_index, city4_index) #つなぎ変える
-                    count += 1
+                tour, count = process_3(tour, count, city1_index, city2_index, city3_index, city4_index, city5_index) #「つなぎ変えorそのまま」のどちらか距離が最小のものが返ってくる
                     
         if count == 0: #つなぎ変えが発生しなかったら終了
             break
@@ -126,7 +131,15 @@ def chenge_tour_two(tour, city2_index, city4_index):
 
 
 
-def opt_2(N, tour):
+def process_2(tour, count, city1_index, city2_index, city3_index, city4_index):
+    if check_min_way_two(tour, city1_index, city2_index, city3_index, city4_index):
+        tour = chenge_tour_two(tour, city2_index, city3_index + 1)
+        count += 1
+    return tour, count
+
+
+
+def optimize_2(N, tour):
     global dist
 
     while (True):
@@ -139,11 +152,10 @@ def opt_2(N, tour):
                 city3_index = j
                 city4_index = (j + 1) % N
 
-                if check_min_way_two(tour, city1_index, city2_index, city3_index, city4_index):
-                    tour = chenge_tour_two(tour, city2_index, city3_index + 1)
-                    count += 1
+                tour, count = process_2(tour, count, city1_index, city2_index, city3_index, city4_index)
 
-        if count == 0: break
+        if count == 0: 
+            break
 
     return tour
 
@@ -171,10 +183,10 @@ if __name__ == '__main__':
     for start_point in range(N): #スタート地点を変える
         tour = make_tour_greedy(dist, start_point) #貪欲法での解法
         
-        tour = opt_3(N, tour) #3点のつなぎ変え
+        tour = optimize_3(N, tour) #3点のつなぎ変え
         # print("three done")
 
-        tour = opt_2(N, tour) #2点のつなぎ変え
+        tour = optimize_2(N, tour) #2点のつなぎ変え
         # print("two done")
 
         path_length = cal_path_length(dist, tour) #経路の合計距離を計算
