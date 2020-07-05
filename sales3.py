@@ -29,10 +29,6 @@ def make_tour_greedy(dist, start_point):
 
 
 
-
-
-
-
 def save_file(path, tour): #結果保存
     with open(path, "w") as f:
      
@@ -147,12 +143,14 @@ def gift_packing(tour, dist, cities, unvisited_cities):
     return tour
 
 
+
 def cal_n_cities_dis(tour):
     sum_dis = 0
     for i in range(len(tour) - 1):
         sum_dis += dist[tour[i]][tour[i + 1]]
 
     return sum_dis
+
 
 
 def cal_changed_dis(original_dis, splited_tour, inserted_tour): #入れ替えた後の距離を計算
@@ -189,11 +187,9 @@ def change_tour_m_n(tour, i, begin_city_index, end_city_index, inserted_tour): #
 
 
     else: #0を跨ぐ
-        # print("0を跨ぐ")
         tour = np.concatenate([original_tour[end_city_index:i+1], inserted_tour])
         tour = np.concatenate([tour, original_tour[i+1:begin_city_index]])
 
-    # print(N, len(tour))
     assert(len(tour) == N)
     return tour
 
@@ -209,16 +205,23 @@ def get_min_tour_m_n(tour, count, splited_tour, inserted_tour, i, begin_city_ind
 
 
 
+def make_split_tour(i, tour):
+    if (i+2)%N < i: #0を跨ぐ
+        splited_tour = np.concatenate([tour[i:], tour[:(i+2)%N ]])
+    
+    else:
+        splited_tour = tour[i:(i+2)%N]
+
+    return splited_tour
+
+
+
 def m_n_opt(tour, n):
     
     while(True):
         count = 0
         for i in range(N):
-            if (i+2)%N < i: #0を跨ぐ
-                splited_tour = np.concatenate([tour[i:], tour[:(i+2)%N ]])
-            
-            else:
-                splited_tour = tour[i:(i+2)%N]
+            splited_tour = make_split_tour(i, tour)
 
             assert(len(splited_tour) == 2)
 
@@ -233,7 +236,6 @@ def m_n_opt(tour, n):
                     inserted_tour = tour[begin_city_index: end_city_index]
 
                 assert(len(inserted_tour) == n)
-
                 tour, count = get_min_tour_m_n(tour.copy(), count, splited_tour, inserted_tour, i, begin_city_index, end_city_index)
             
         if (count == 0):
@@ -292,7 +294,7 @@ if __name__ == '__main__':
             cities = np.array(cities)
             dist = cal_dist(cities) #データ読み込み
             N = len(dist)
-            
+
             print("load done")
 
             tour = get_min_tour(dist, cities)
